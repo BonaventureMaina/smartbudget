@@ -26,3 +26,37 @@ class TokenData(BaseModel):
 class UserLogin(BaseModel):
     username: str
     password: str
+from datetime import datetime
+from pydantic import BaseModel
+
+class TransactionCreate(BaseModel):
+    amount: float
+    type: str  # "income" or "expense"
+    description: str | None = None
+    category_id: int | None = None
+    date: datetime | None = None
+
+class TransactionOut(BaseModel):
+    id: int
+    user_id: int
+    amount: float
+    type: str
+    description: str | None
+    category_id: int | None
+    date: datetime
+
+    model_config = {"from_attributes": True}
+
+class BudgetCreate(BaseModel):
+    category_id: int
+    amount: float
+    month: str  # YYYY-MM
+
+class BudgetOut(BaseModel):
+    id: int
+    user_id: int
+    category_id: int
+    amount: float
+    month: str
+
+    model_config = {"from_attributes": True}
