@@ -10,77 +10,92 @@ class BudgetScreen extends StatelessWidget {
     final txProvider = context.watch<TransactionProvider>();
     final theme = Theme.of(context);
 
-    final expenses = txProvider.transactions
-        .where((t) => t.type == 'expense')
-        .toList();
-
+    // Aggregate all expenses by description
     final Map<String, double> spending = {};
-    for (final txn in expenses) {
-      final label = txn.description ?? 'Other';
-      spending[label] = (spending[label] ?? 0) + txn.amount;
+    double totalSpent = 0;
+    for (final txn in txProvider.transactions) {
+      if (txn.type == 'expense') {
+        final label = (txn.description ?? 'Other').trim();
+        if (label.isEmpty) continue;
+        spending[label] = (spending[label] ?? 0) + txn.amount;
+        totalSpent += txn.amount;
+      }
     }
 
-    // Hardcoded demo budgets — ideally sourced from backend later
-    final Map<String, double> budgets = {
-      'Lunch': 200.0,
-      'Groceries': 300.0,
-      'Transport': 150.0,
-      'Coffee': 100.0,
-    };
-
     return Scaffold(
-      appBar: AppBar(title: const Text('Budget vs Actual')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: budgets.entries.map((entry) {
-          final category = entry.key;
-          final budget = entry.value;
-          final actual = spending[category] ?? 0;
-          final percentage = budget > 0 ? (actual / budget).clamp(0.0, 1.0) : 0.0;
-          final isOverBudget = actual > budget;
-
-          return Card(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(category, style: theme.textTheme.titleMedium),
-                      Text(
-                        '\$${actual.toStringAsFixed(0)} / \$${budget.toStringAsFixed(0)}',
-                        style: TextStyle(color: Colors.grey.shade500),
+      appBar: AppBar(title: const Text('Spending Breakdown')),
+      body: spending.isEmpty
+          ? const Center(child: Text('No expenses yet'))
+          : ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                // Total card
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      children: [
+                        Text('Total Spent',
+                            style: theme.textTheme.titleMedium?.copyWith(color: Colors.grey)),
+                        const SizedBox(height: 8),
+                        Text(
+                          '\$${totalSpent.toStringAsFixed(2)}',
+                          style: theme.textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Per-category breakdown
+                ...spending.entries.map((entry) {
+                  final desc = entry.key;
+                  final amount = entry.value;
+                  final fraction = totalSpent > 0 ? amount / totalSpent : 0.0;
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(desc,
+                                    style: theme.textTheme.titleMedium,
+                                    overflow: TextOverflow.ellipsis),
+                              ),
+                              Text('\$${amount.toStringAsFixed(2)}',
+                                  style: TextStyle(color: Colors.grey.shade400)),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: LinearProgressIndicator(
+                              value: fraction,
+                              minHeight: 10,
+                              backgroundColor: Colors.grey.shade800,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            '${(fraction * 100).toStringAsFixed(0)}% of total',
+                            style: TextStyle(color: Colors.grey, fontSize: 12),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: LinearProgressIndicator(
-                      value: percentage,
-                      minHeight: 10,
-                      backgroundColor: Colors.grey.shade800,
-                      color: isOverBudget ? Colors.redAccent : theme.colorScheme.primary,
                     ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    isOverBudget
-                        ? 'Over budget by \$${(actual - budget).toStringAsFixed(0)}'
-                        : '${(percentage * 100).toStringAsFixed(0)}% used',
-                    style: TextStyle(
-                      color: isOverBudget ? Colors.redAccent : Colors.grey,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
+                  );
+                }),
+              ],
             ),
-          );
-        }).toList(),
-      ),
     );
   }
 }
