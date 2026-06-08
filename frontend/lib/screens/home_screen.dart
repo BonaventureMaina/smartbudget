@@ -37,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final txProvider = context.watch<TransactionProvider>();
+    final theme = Theme.of(context);
 
     final expenses = txProvider.transactions
         .where((t) => t.type == 'expense')
@@ -52,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('SmartBudget'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.pie_chart),
+            icon: const Icon(Icons.pie_chart_outline),
             tooltip: 'Budgets',
             onPressed: () => Navigator.of(context).pushNamed('/budgets'),
           ),
@@ -66,57 +67,81 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.of(context).pushNamed('/add-transaction'),
+        backgroundColor: theme.colorScheme.primary,
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
       body: RefreshIndicator(
         onRefresh: _loadData,
         child: txProvider.loading
             ? const Center(child: CircularProgressIndicator())
             : CustomScrollView(
                 slivers: [
+                  // Forecast card
                   SliverToBoxAdapter(
                     child: Card(
-                      margin: const EdgeInsets.all(16),
                       child: Padding(
-                        padding: const EdgeInsets.all(20),
+                        padding: const EdgeInsets.all(24),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Next Month Forecast',
-                                style: Theme.of(context).textTheme.titleMedium),
-                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Icon(Icons.trending_up, color: theme.colorScheme.primary, size: 28),
+                                const SizedBox(width: 12),
+                                Text('Next Month Forecast',
+                                    style: theme.textTheme.titleMedium?.copyWith(color: Colors.grey)),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
                             Text(
                               txProvider.forecast != null
                                   ? '\$${txProvider.forecast!.toStringAsFixed(2)}'
                                   : 'Not enough data',
-                              style: Theme.of(context).textTheme.headlineMedium,
+                              style: theme.textTheme.headlineLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: txProvider.forecast != null
+                                    ? Colors.white
+                                    : Colors.grey,
+                              ),
                             ),
                           ],
                         ),
                       ),
                     ),
                   ),
+                  // Pie chart card
                   if (categoryTotals.isNotEmpty)
                     SliverToBoxAdapter(
                       child: Card(
-                        margin: const EdgeInsets.symmetric(horizontal: 16),
                         child: Padding(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(24),
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text('Expenses Breakdown',
-                                  style: Theme.of(context).textTheme.titleMedium),
-                              const SizedBox(height: 12),
+                                  style: theme.textTheme.titleMedium?.copyWith(color: Colors.grey)),
+                              const SizedBox(height: 20),
                               SizedBox(
-                                height: 200,
+                                height: 220,
                                 child: PieChart(
                                   PieChartData(
+                                    centerSpaceRadius: 40,
                                     sections: categoryTotals.entries.map((e) {
+                                      final color = _getColor(categoryTotals.keys.toList().indexOf(e.key));
                                       return PieChartSectionData(
                                         value: e.value,
-                                        title: e.key,
-                                        radius: 60,
-                                        titleStyle: const TextStyle(fontSize: 10),
+                                        color: color,
+                                        title: e.key.length > 10
+                                            ? '${e.key.substring(0, 8)}..'
+                                            : e.key,
+                                        titleStyle: const TextStyle(fontSize: 11, color: Colors.white70),
+                                        radius: 70,
                                       );
                                     }).toList(),
+                                    borderData: FlBorderData(show: false),
+                                    sectionsSpace: 3,
                                   ),
                                 ),
                               ),
@@ -125,38 +150,55 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
+                  // Transactions header
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text('Transactions',
-                          style: Theme.of(context).textTheme.titleMedium),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      child: Text('Recent Transactions',
+                          style: theme.textTheme.titleMedium?.copyWith(color: Colors.grey)),
                     ),
                   ),
+                  // Transaction list
                   if (txProvider.transactions.isEmpty)
-                    const SliverToBoxAdapter(
-                      child: Center(child: Text('No transactions yet')),
+                    SliverToBoxAdapter(
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 40),
+                          child: Text('No transactions yet',
+                              style: TextStyle(color: Colors.grey.shade500)),
+                        ),
+                      ),
                     )
                   else
                     SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (ctx, index) {
                           final txn = txProvider.transactions[index];
-                          return ListTile(
-                            leading: Icon(
-                              txn.type == 'income'
-                                  ? Icons.arrow_downward
-                                  : Icons.arrow_upward,
-                              color: txn.type == 'income'
-                                  ? Colors.green
-                                  : Colors.red,
-                            ),
-                            title: Text(txn.description ?? 'No description'),
-                            subtitle: Text(
-                              '\$${txn.amount.toStringAsFixed(2)} · ${txn.type}',
-                            ),
-                            trailing: Text(
-                              '${txn.date.month}/${txn.date.day}',
-                              style: const TextStyle(color: Colors.grey),
+                          final isExpense = txn.type == 'expense';
+                          return Card(
+                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor:
+                                    isExpense ? Colors.redAccent.withOpacity(0.15) : Colors.greenAccent.withOpacity(0.15),
+                                child: Icon(
+                                  isExpense ? Icons.arrow_upward : Icons.arrow_downward,
+                                  color: isExpense ? Colors.redAccent : Colors.greenAccent,
+                                  size: 18,
+                                ),
+                              ),
+                              title: Text(
+                                txn.description ?? 'No description',
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                              subtitle: Text(
+                                '\$${txn.amount.toStringAsFixed(2)} · ${txn.type}',
+                                style: TextStyle(color: Colors.grey.shade500),
+                              ),
+                              trailing: Text(
+                                '${txn.date.month}/${txn.date.day}',
+                                style: TextStyle(color: Colors.grey.shade600),
+                              ),
                             ),
                           );
                         },
@@ -166,13 +208,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.of(context).pushNamed('/add-transaction');
-        },
-        icon: const Icon(Icons.add),
-        label: const Text('Add'),
-      ),
     );
+  }
+
+  // Helper to pick distinct colors for pie sections
+  Color _getColor(int index) {
+    const palette = [
+      Color(0xFF6C63FF),
+      Color(0xFFE91E63),
+      Color(0xFF00BFA5),
+      Color(0xFFFFA726),
+      Color(0xFF9C27B0),
+      Color(0xFF29B6F6),
+      Color(0xFFEF5350),
+      Color(0xFF66BB6A),
+    ];
+    return palette[index % palette.length];
   }
 }

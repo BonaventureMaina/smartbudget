@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
 import '../providers/transaction_provider.dart';
-import '../models/transaction.dart' as model;
 
 class BudgetScreen extends StatelessWidget {
   const BudgetScreen({super.key});
@@ -10,6 +8,8 @@ class BudgetScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final txProvider = context.watch<TransactionProvider>();
+    final theme = Theme.of(context);
+
     final expenses = txProvider.transactions
         .where((t) => t.type == 'expense')
         .toList();
@@ -20,7 +20,7 @@ class BudgetScreen extends StatelessWidget {
       spending[label] = (spending[label] ?? 0) + txn.amount;
     }
 
-    // Hardcoded sample budgets for demo — replace with real data from backend later
+    // Hardcoded demo budgets — ideally sourced from backend later
     final Map<String, double> budgets = {
       'Lunch': 200.0,
       'Groceries': 300.0,
@@ -37,21 +37,43 @@ class BudgetScreen extends StatelessWidget {
           final budget = entry.value;
           final actual = spending[category] ?? 0;
           final percentage = budget > 0 ? (actual / budget).clamp(0.0, 1.0) : 0.0;
+          final isOverBudget = actual > budget;
 
           return Card(
-            margin: const EdgeInsets.only(bottom: 12),
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(category, style: Theme.of(context).textTheme.titleMedium),
-                  const SizedBox(height: 8),
-                  LinearProgressIndicator(value: percentage),
-                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(category, style: theme.textTheme.titleMedium),
+                      Text(
+                        '\$${actual.toStringAsFixed(0)} / \$${budget.toStringAsFixed(0)}',
+                        style: TextStyle(color: Colors.grey.shade500),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: LinearProgressIndicator(
+                      value: percentage,
+                      minHeight: 10,
+                      backgroundColor: Colors.grey.shade800,
+                      color: isOverBudget ? Colors.redAccent : theme.colorScheme.primary,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
                   Text(
-                    '\$${actual.toStringAsFixed(0)} of \$${budget.toStringAsFixed(0)}',
-                    style: const TextStyle(color: Colors.grey),
+                    isOverBudget
+                        ? 'Over budget by \$${(actual - budget).toStringAsFixed(0)}'
+                        : '${(percentage * 100).toStringAsFixed(0)}% used',
+                    style: TextStyle(
+                      color: isOverBudget ? Colors.redAccent : Colors.grey,
+                      fontSize: 12,
+                    ),
                   ),
                 ],
               ),
