@@ -28,7 +28,6 @@ pandas==3.0.3
 passlib==1.7.4
 patsy==1.0.2
 prompt_toolkit==3.0.52
-psycopg2-binary==2.9.12
 pyasn1==0.6.3
 pycparser==3.0
 pydantic==2.13.4
@@ -56,3 +55,4 @@ vine==5.1.0
 watchfiles==1.2.0
 wcwidth==0.8.0
 websockets==16.0
+aiosqlite

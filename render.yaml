@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: smartbudget-api
+    env: python
+    region: ohio
+    plan: free
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port 10000
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:///./smartbudget.db
+      - key: SECRET_KEY
+        value: change-me-in-production-abc123
+      - key: REDIS_URL
+        value: redis://placeholder:6379/0
