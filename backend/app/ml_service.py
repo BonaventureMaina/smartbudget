@@ -6,7 +6,6 @@ from sqlalchemy.orm import Session
 from . import models
 
 def _train_classifier(user_id: int, db: Session):
-    """Train a Naive Bayes classifier on all categorized transactions for a user."""
     transactions = (
         db.query(models.Transaction)
         .filter(
@@ -17,7 +16,7 @@ def _train_classifier(user_id: int, db: Session):
         .all()
     )
     if len(transactions) < 5:
-        return None  # not enough data
+        return None
 
     df = pd.DataFrame([(t.description, t.category_id) for t in transactions],
                       columns=["description", "category_id"])
@@ -41,7 +40,6 @@ def predict_category(user_id: int, description: str, db: Session) -> int | None:
 
 
 def forecast_spending(user_id: int, db: Session):
-    """Simple moving-average forecast for next month using statsmodels."""
     from statsmodels.tsa.holtwinters import SimpleExpSmoothing
     import numpy as np
 
@@ -56,7 +54,6 @@ def forecast_spending(user_id: int, db: Session):
     if len(transactions) < 3:
         return None
 
-    # Aggregate by month
     df = pd.DataFrame([(t.date.strftime("%Y-%m"), t.amount) for t in transactions],
                       columns=["month", "amount"])
     monthly = df.groupby("month")["amount"].sum().reset_index()
@@ -65,5 +62,10 @@ def forecast_spending(user_id: int, db: Session):
         return None
 
     model = SimpleExpSmoothing(monthly["amount"].astype(float)).fit()
-    forecast = model.forecast(1)  # next month
-    return float(forecast[0]) if not np.isnan(forecast[0]) else None
+    forecast = model.forecast(1)  # returns a scalar (numpy float or array of length 1)
+    # Handle both scalar and array cases robustly
+    try:
+        val = forecast.item()   # safest: extracts a Python scalar
+    except AttributeError:
+        val = forecast
+    return float(val) if val is not None and not np.isnan(val) else None

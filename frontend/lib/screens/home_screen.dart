@@ -38,7 +38,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final auth = context.watch<AuthProvider>();
     final txProvider = context.watch<TransactionProvider>();
 
-    // Build pie chart data from expenses
     final expenses = txProvider.transactions
         .where((t) => t.type == 'expense')
         .toList();
@@ -52,6 +51,11 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('SmartBudget'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.pie_chart),
+            tooltip: 'Budgets',
+            onPressed: () => Navigator.of(context).pushNamed('/budgets'),
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Logout',
@@ -68,7 +72,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ? const Center(child: CircularProgressIndicator())
             : CustomScrollView(
                 slivers: [
-                  // Forecast card
                   SliverToBoxAdapter(
                     child: Card(
                       margin: const EdgeInsets.all(16),
@@ -91,7 +94,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  // Pie chart
                   if (categoryTotals.isNotEmpty)
                     SliverToBoxAdapter(
                       child: Card(
@@ -123,7 +125,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                  // Transaction list header
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -131,7 +132,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: Theme.of(context).textTheme.titleMedium),
                     ),
                   ),
-                  // Transactions
                   if (txProvider.transactions.isEmpty)
                     const SliverToBoxAdapter(
                       child: Center(child: Text('No transactions yet')),

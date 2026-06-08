@@ -6,6 +6,7 @@ import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/add_transaction_screen.dart';
+import 'screens/budget_screen.dart';
 
 void main() {
   runApp(const SmartBudgetApp());
@@ -29,6 +30,7 @@ class SmartBudgetApp extends StatelessWidget {
           '/register': (_) => const RegisterScreen(),
           '/home': (_) => const HomeScreen(),
           '/add-transaction': (_) => const AddTransactionScreen(),
+          '/budgets': (_) => const BudgetScreen(),
         },
         home: const AuthGate(),
       ),
