@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: smartbudget_user
+      POSTGRES_PASSWORD: smartbudget_pass
+      POSTGRES_DB: smartbudget_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://smartbudget_user:smartbudget_pass@db:5432/smartbudget_db
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: change-me-in-production-abc123
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  pgdata:

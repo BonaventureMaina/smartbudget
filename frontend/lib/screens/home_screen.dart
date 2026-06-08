@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/transaction_provider.dart';
@@ -36,6 +37,16 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final txProvider = context.watch<TransactionProvider>();
+
+    // Build pie chart data from expenses
+    final expenses = txProvider.transactions
+        .where((t) => t.type == 'expense')
+        .toList();
+    final Map<String, double> categoryTotals = {};
+    for (final txn in expenses) {
+      final label = txn.description ?? 'Other';
+      categoryTotals[label] = (categoryTotals[label] ?? 0) + txn.amount;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -80,6 +91,38 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
+                  // Pie chart
+                  if (categoryTotals.isNotEmpty)
+                    SliverToBoxAdapter(
+                      child: Card(
+                        margin: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            children: [
+                              Text('Expenses Breakdown',
+                                  style: Theme.of(context).textTheme.titleMedium),
+                              const SizedBox(height: 12),
+                              SizedBox(
+                                height: 200,
+                                child: PieChart(
+                                  PieChartData(
+                                    sections: categoryTotals.entries.map((e) {
+                                      return PieChartSectionData(
+                                        value: e.value,
+                                        title: e.key,
+                                        radius: 60,
+                                        titleStyle: const TextStyle(fontSize: 10),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   // Transaction list header
                   SliverToBoxAdapter(
                     child: Padding(
