@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from .database import engine, Base
 from .routers import auth, users, transactions, budgets
 
 app = FastAPI(title="SmartBudget API", version="0.1.0")
 
-# Allow all origins for development
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -18,6 +18,12 @@ app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(transactions.router)
 app.include_router(budgets.router)
+
+
+@app.on_event("startup")
+def on_startup():
+    # Create tables on first run (safe for SQLite)
+    Base.metadata.create_all(bind=engine)
 
 
 @app.get("/health")
