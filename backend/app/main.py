@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
 
-from .database import engine, Base
+from .database import engine, Base, SessionLocal
 from .routers import auth, users, transactions, budgets, categories
+from . import models
 
 app = FastAPI(title="SmartBudget API", version="0.1.0")
 
@@ -23,8 +25,17 @@ app.include_router(categories.router)
 
 @app.on_event("startup")
 def on_startup():
-    # Create tables on first run (safe for SQLite)
     Base.metadata.create_all(bind=engine)
+    # Seed default categories if table is empty
+    db: Session = SessionLocal()
+    try:
+        if db.query(models.Category).count() == 0:
+            defaults = ["Food", "Transport", "Utilities", "Entertainment", "Salary", "Shopping", "Health", "Other"]
+            for name in defaults:
+                db.add(models.Category(name=name))
+            db.commit()
+    finally:
+        db.close()
 
 
 @app.get("/health")
