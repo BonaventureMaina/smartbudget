@@ -1,3 +1,5 @@
+[![Backend CI](https://github.com/BonaventureMaina/smartbudget/actions/workflows/test.yml/badge.svg)](https://github.com/BonaventureMaina/smartbudget/actions/workflows/test.yml)
+
 # SmartBudget – AI‑Powered Personal Finance Manager
 
 A production‑grade full‑stack application built with **Flutter**, **FastAPI**, **PostgreSQL**, **Redis**, and **AI/ML** (scikit‑learn + statsmodels).  
