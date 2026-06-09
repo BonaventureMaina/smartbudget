@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/transaction_provider.dart';
+import '../services/auth_service.dart';
 import '../services/transaction_service.dart';
 import '../models/transaction.dart' as model;
 
@@ -16,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool _loaded = false;
   final TransactionService _txService = TransactionService();
+  final AuthService _authService = AuthService();
 
   @override
   void didChangeDependencies() {
@@ -37,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _deleteTransaction(int id) async {
     try {
-      final token = await _txService._authService.getToken();
+      final token = await _authService.getToken();
       if (token != null) {
         await _txService.deleteTransaction(id, token);
         await _loadData();
@@ -92,6 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ? const Center(child: CircularProgressIndicator())
             : CustomScrollView(
                 slivers: [
+                  // Forecast card
                   SliverToBoxAdapter(
                     child: Card(
                       child: Padding(
@@ -124,6 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
+                  // Pie chart card
                   if (categoryTotals.isNotEmpty)
                     SliverToBoxAdapter(
                       child: Card(
@@ -162,6 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
+                  // Transactions header
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -169,6 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: theme.textTheme.titleMedium?.copyWith(color: Colors.grey)),
                     ),
                   ),
+                  // Transaction list
                   if (txProvider.transactions.isEmpty)
                     SliverToBoxAdapter(
                       child: Center(
