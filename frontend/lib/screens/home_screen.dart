@@ -15,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool _loaded = false;
+  final TransactionService _txService = TransactionService();
 
   @override
   void didChangeDependencies() {
@@ -35,10 +36,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _deleteTransaction(int id) async {
-    final authService = AuthService();
-    final token = await authService.getToken();
-    await TransactionService().deleteTransaction(id, token!);
-    await _loadData();
+    try {
+      final token = await _txService._authService.getToken();
+      if (token != null) {
+        await _txService.deleteTransaction(id, token);
+        await _loadData();
+      }
+    } catch (_) {}
   }
 
   @override
@@ -88,7 +92,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ? const Center(child: CircularProgressIndicator())
             : CustomScrollView(
                 slivers: [
-                  // Forecast card
                   SliverToBoxAdapter(
                     child: Card(
                       child: Padding(
@@ -121,7 +124,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  // Pie chart card
                   if (categoryTotals.isNotEmpty)
                     SliverToBoxAdapter(
                       child: Card(
@@ -160,7 +162,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                  // Transactions header
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -168,7 +169,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: theme.textTheme.titleMedium?.copyWith(color: Colors.grey)),
                     ),
                   ),
-                  // Transaction list
                   if (txProvider.transactions.isEmpty)
                     SliverToBoxAdapter(
                       child: Center(
