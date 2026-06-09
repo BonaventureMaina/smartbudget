@@ -39,7 +39,7 @@ class BudgetScreen extends StatelessWidget {
                             style: theme.textTheme.titleMedium?.copyWith(color: Colors.grey)),
                         const SizedBox(height: 8),
                         Text(
-                          '\$${totalSpent.toStringAsFixed(2)}',
+                          'KES ${totalSpent.toStringAsFixed(2)}',
                           style: theme.textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -70,7 +70,7 @@ class BudgetScreen extends StatelessWidget {
                                     style: theme.textTheme.titleMedium,
                                     overflow: TextOverflow.ellipsis),
                               ),
-                              Text('\$${amount.toStringAsFixed(2)}',
+                              Text('KES ${amount.toStringAsFixed(2)}',
                                   style: TextStyle(color: Colors.grey.shade400)),
                             ],
                           ),

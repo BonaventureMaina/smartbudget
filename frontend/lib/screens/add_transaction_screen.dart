@@ -78,7 +78,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       controller: _amountCtrl,
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
-                        labelText: 'Amount',
+                        labelText: 'Amount (KES)',
                         prefixIcon: Icon(Icons.attach_money),
                       ),
                       validator: (v) =>

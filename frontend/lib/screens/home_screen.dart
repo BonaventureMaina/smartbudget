@@ -112,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             const SizedBox(height: 16),
                             Text(
                               txProvider.forecast != null
-                                  ? '\$${txProvider.forecast!.toStringAsFixed(2)}'
+                                  ? 'KES ${txProvider.forecast!.toStringAsFixed(2)}'
                                   : 'Not enough data',
                               style: theme.textTheme.headlineLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
@@ -214,7 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   style: const TextStyle(color: Colors.white),
                                 ),
                                 subtitle: Text(
-                                  '\$${txn.amount.toStringAsFixed(2)} · ${txn.type}',
+                                  'KES ${txn.amount.toStringAsFixed(2)} · ${txn.type}',
                                   style: TextStyle(color: Colors.grey.shade500),
                                 ),
                                 trailing: Text(
