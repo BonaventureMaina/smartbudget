@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/transaction_provider.dart';
+import '../services/transaction_service.dart';
 import '../models/transaction.dart' as model;
 
 class HomeScreen extends StatefulWidget {
@@ -33,11 +34,20 @@ class _HomeScreenState extends State<HomeScreen> {
     ]);
   }
 
+  Future<void> _deleteTransaction(int id) async {
+    final authService = AuthService();
+    final token = await authService.getToken();
+    await TransactionService().deleteTransaction(id, token!);
+    await _loadData();
+  }
+
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final txProvider = context.watch<TransactionProvider>();
     final theme = Theme.of(context);
+
+    final showLoading = txProvider.loading && txProvider.transactions.isEmpty;
 
     final expenses = txProvider.transactions
         .where((t) => t.type == 'expense')
@@ -74,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: _loadData,
-        child: txProvider.loading
+        child: showLoading
             ? const Center(child: CircularProgressIndicator())
             : CustomScrollView(
                 slivers: [
@@ -175,29 +185,40 @@ class _HomeScreenState extends State<HomeScreen> {
                         (ctx, index) {
                           final txn = txProvider.transactions[index];
                           final isExpense = txn.type == 'expense';
-                          return Card(
-                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                            child: ListTile(
-                              leading: CircleAvatar(
-                                backgroundColor:
-                                    isExpense ? Colors.redAccent.withOpacity(0.15) : Colors.greenAccent.withOpacity(0.15),
-                                child: Icon(
-                                  isExpense ? Icons.arrow_upward : Icons.arrow_downward,
-                                  color: isExpense ? Colors.redAccent : Colors.greenAccent,
-                                  size: 18,
+                          return Dismissible(
+                            key: Key(txn.id.toString()),
+                            direction: DismissDirection.endToStart,
+                            background: Container(
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.only(right: 20),
+                              color: Colors.redAccent,
+                              child: const Icon(Icons.delete, color: Colors.white),
+                            ),
+                            onDismissed: (_) => _deleteTransaction(txn.id),
+                            child: Card(
+                              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor:
+                                      isExpense ? Colors.redAccent.withOpacity(0.15) : Colors.greenAccent.withOpacity(0.15),
+                                  child: Icon(
+                                    isExpense ? Icons.arrow_upward : Icons.arrow_downward,
+                                    color: isExpense ? Colors.redAccent : Colors.greenAccent,
+                                    size: 18,
+                                  ),
                                 ),
-                              ),
-                              title: Text(
-                                txn.description ?? 'No description',
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                              subtitle: Text(
-                                '\$${txn.amount.toStringAsFixed(2)} · ${txn.type}',
-                                style: TextStyle(color: Colors.grey.shade500),
-                              ),
-                              trailing: Text(
-                                '${txn.date.month}/${txn.date.day}',
-                                style: TextStyle(color: Colors.grey.shade600),
+                                title: Text(
+                                  txn.description ?? 'No description',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                subtitle: Text(
+                                  '\$${txn.amount.toStringAsFixed(2)} · ${txn.type}',
+                                  style: TextStyle(color: Colors.grey.shade500),
+                                ),
+                                trailing: Text(
+                                  '${txn.date.month}/${txn.date.day}',
+                                  style: TextStyle(color: Colors.grey.shade600),
+                                ),
                               ),
                             ),
                           );
@@ -211,7 +232,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Helper to pick distinct colors for pie sections
   Color _getColor(int index) {
     const palette = [
       Color(0xFF6C63FF),

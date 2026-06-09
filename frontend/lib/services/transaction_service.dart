@@ -66,4 +66,17 @@ class TransactionService {
       throw Exception('Failed to fetch forecast');
     }
   }
+
+  Future<void> deleteTransaction(int id, String token) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/transactions/$id'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete transaction');
+    }
+  }
 }
