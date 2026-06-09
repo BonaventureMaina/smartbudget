@@ -1,14 +1,11 @@
 from datetime import datetime
 from typing import Optional
-
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-
 from .. import models, schemas, auth, ml_service
 from ..database import get_db
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
-
 
 @router.post("/", response_model=schemas.TransactionOut, status_code=201)
 def create_transaction(
@@ -16,11 +13,9 @@ def create_transaction(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.get_current_user),
 ):
-    # Auto-categorize using ML if no category provided
     category_id = txn.category_id
     if category_id is None and txn.description:
         category_id = ml_service.predict_category(current_user.id, txn.description, db)
-
     new_txn = models.Transaction(
         user_id=current_user.id,
         amount=txn.amount,
@@ -33,7 +28,6 @@ def create_transaction(
     db.commit()
     db.refresh(new_txn)
     return new_txn
-
 
 @router.get("/", response_model=list[schemas.TransactionOut])
 def list_transactions(
@@ -51,7 +45,6 @@ def list_transactions(
         q = q.filter(models.Transaction.category_id == category_id)
     return q.order_by(models.Transaction.date.desc()).offset(skip).limit(limit).all()
 
-
 @router.get("/forecast")
 def get_forecast(
     db: Session = Depends(get_db),
@@ -61,3 +54,19 @@ def get_forecast(
     if forecast is None:
         return {"message": "Not enough data for a forecast"}
     return {"next_month_spending_forecast": round(forecast, 2)}
+
+@router.delete("/{transaction_id}", status_code=200)
+def delete_transaction(
+    transaction_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_user),
+):
+    txn = db.query(models.Transaction).filter(
+        models.Transaction.id == transaction_id,
+        models.Transaction.user_id == current_user.id
+    ).first()
+    if not txn:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    db.delete(txn)
+    db.commit()
+    return {"detail": "Transaction deleted"}
