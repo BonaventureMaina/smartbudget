@@ -86128,7 +86128,7 @@ break
 case 6:case 1:return A.M(q,r)
 case 2:return A.L(o.at(-1),r)}})
 return A.N($async$wk,r)},
-K(a){var s,r=this,q=null,p=A.hf(a,!0,t.IZ),o=A.V(a),n=A.av4(q,B.Vz),m=A.j2(20),l=A.c([new A.bh(0,B.H,A.aC(51,B.l.C()>>>16&255,B.l.C()>>>8&255,B.l.C()&255),B.dJ,20)],t.V),k=A.uM(r.e,B.GU,B.Rg,!1,new A.aj9()),j=A.uM(r.f,B.GT,q,!1,q),i=r.w,h=J.k4(p.c,new A.aja(),t.In)
+K(a){var s,r=this,q=null,p=A.hf(a,!0,t.IZ),o=A.V(a),n=A.av4(q,B.Vz),m=A.j2(20),l=A.c([new A.bh(0,B.H,A.aC(51,B.l.C()>>>16&255,B.l.C()>>>8&255,B.l.C()&255),B.dJ,20)],t.V),k=A.uM(r.e,B.GV,B.Rg,!1,new A.aj9()),j=A.uM(r.f,B.GT,q,!1,q),i=r.w,h=J.k4(p.c,new A.aja(),t.In)
 h=A.a1(h,h.$ti.h("ak.E"))
 i=A.aK8(B.GR,h,new A.ajb(r),i,t.oo)
 h=o.ok.z
@@ -86181,7 +86181,7 @@ o=B.d.a9(l.a,2)
 r=r.e
 r=r==null?m:r.z_(B.k,B.c0)
 n=t.D
-n=A.c([A.IL(new A.bQ(B.cL,A.j8(A.c([q,B.lz,A.co("$"+o,m,m,m,r,m,m)],n),B.aJ,B.aD,B.b8),m),m),B.d5],n)
+n=A.c([A.IL(new A.bQ(B.cL,A.j8(A.c([q,B.lz,A.co("KES "+o,m,m,m,r,m,m)],n),B.aJ,B.aD,B.b8),m),m),B.d5],n)
 r=i.$ti.h("db<1,2>")
 B.b.V(n,A.mn(new A.db(i,r),new A.a_E(l,j),r.h("y.E"),t.l7))
 n=A.aAM(n,B.FP,m,!1)
@@ -86190,7 +86190,7 @@ A.a_E.prototype={
 $1(a){var s,r=null,q=a.b,p=this.a.a,o=p>0?q/p:0
 p=this.b
 s=t.D
-return A.IL(new A.bQ(B.nK,A.j8(A.c([A.pU(A.c([A.azZ(A.co(a.a,r,B.aN,r,p.ok.w,r,r)),A.co("$"+B.d.a9(q,2),r,r,r,A.eV(r,r,B.fC,r,r,r,r,r,r,r,r,r,r,r,r,r,r,!0,r,r,r,r,r,r,r,r),r,r)],s),B.aJ,B.kK,B.b8,0),B.zx,A.a0u(A.j2(8),new A.zr(10,o,B.bY,p.ax.b,r,r,r,r),B.bG),B.Qk,A.co(B.d.a9(o*100,0)+"% of total",r,r,r,A.eV(r,r,B.c4,r,r,r,r,r,r,r,r,12,r,r,r,r,r,!0,r,r,r,r,r,r,r,r),r,r)],s),B.bw,B.aD,B.b8),r),B.FI)},
+return A.IL(new A.bQ(B.nK,A.j8(A.c([A.pU(A.c([A.azZ(A.co(a.a,r,B.aN,r,p.ok.w,r,r)),A.co("KES "+B.d.a9(q,2),r,r,r,A.eV(r,r,B.fC,r,r,r,r,r,r,r,r,r,r,r,r,r,r,!0,r,r,r,r,r,r,r,r),r,r)],s),B.aJ,B.kK,B.b8,0),B.zx,A.a0u(A.j2(8),new A.zr(10,o,B.bY,p.ax.b,r,r,r,r),B.bG),B.Qk,A.co(B.d.a9(o*100,0)+"% of total",r,r,r,A.eV(r,r,B.c4,r,r,r,r,r,r,r,r,12,r,r,r,r,r,!0,r,r,r,r,r,r,r,r),r,r)],s),B.bw,B.aD,B.b8),r),B.FI)},
 $S:520}
 A.oQ.prototype={
 ag(){return new A.Ei(new A.P8(new A.rf()),new A.rf())}}
@@ -86251,7 +86251,7 @@ l=m.w
 k=l==null
 n=A.pU(A.c([n,B.Qh,A.co("Next Month Forecast",i,i,i,k?i:l.bj(B.c4),i,i)],d),B.aJ,B.aD,B.b8,0)
 j=g.d
-j=j!=null?"$"+B.d.a9(j,2):"Not enough data"
+j=j!=null?"KES "+B.d.a9(j,2):"Not enough data"
 m=m.d
 if(m==null)m=i
 else m=m.z_(g.d!=null?B.k:B.c4,B.c0)
@@ -86295,7 +86295,7 @@ $2(a,b){var s,r,q=null,p=J.fS(this.b.b,b),o=p.d,n=o==="expense",m=B.i.k(p.a),l=A
 j=A.t8(j,n?B.co:B.hx,q,18)
 s=p.e
 r=p.r
-return A.azJ(l,B.ar,A.IL(new A.Lv(new A.IQ(j,k,q),A.co(s==null?"No description":s,q,q,q,B.St,q,q),A.co("$"+B.d.a9(p.c,2)+" \xb7 "+o,q,q,q,A.eV(q,q,B.fL,q,q,q,q,q,q,q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q),A.co(""+A.aBx(r)+"/"+A.aBw(r),q,q,q,A.eV(q,q,B.dl,q,q,q,q,q,q,q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q),q),B.nJ),B.jy,new A.dF(m,t.kK),new A.amV(this.a,p),B.bJ)},
+return A.azJ(l,B.ar,A.IL(new A.Lv(new A.IQ(j,k,q),A.co(s==null?"No description":s,q,q,q,B.St,q,q),A.co("KES "+B.d.a9(p.c,2)+" \xb7 "+o,q,q,q,A.eV(q,q,B.fL,q,q,q,q,q,q,q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q),A.co(""+A.aBx(r)+"/"+A.aBw(r),q,q,q,A.eV(q,q,B.dl,q,q,q,q,q,q,q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q),q),B.nJ),B.jy,new A.dF(m,t.kK),new A.amV(this.a,p),B.bJ)},
 $S:523}
 A.amV.prototype={
 $1(a){return this.a.pd(this.b.a)},
@@ -86398,7 +86398,7 @@ s=A.j2(20)
 r=A.c([new A.bh(0,B.H,A.aC(51,B.l.C()>>>16&255,B.l.C()>>>8&255,B.l.C()&255),B.dJ,20)],t.V)
 q=A.uM(k.e,B.ok,j,!1,new A.apw())
 p=A.uM(k.f,B.GS,B.A0,!1,new A.apx())
-o=A.uM(k.r,B.GV,j,!0,new A.apy())
+o=A.uM(k.r,B.GU,j,!0,new A.apy())
 n=i.c
 m=n?j:k.gaeL()
 l=t.D
@@ -92333,13 +92333,13 @@ B.GS=new A.is(null,null,null,"Email",null,null,null,null,null,null,null,null,nul
 B.GA=new A.cE(61358,"MaterialIcons",!1)
 B.GO=new A.eP(B.GA,null,null,null,null)
 B.GT=new A.is(null,null,null,"Description",null,null,null,null,null,null,null,null,null,null,null,null,!0,!0,!1,null,null,null,null,null,null,null,null,null,B.GO,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,!0,null,null,null,null)
-B.Gm=new A.cE(57522,"MaterialIcons",!1)
-B.GI=new A.eP(B.Gm,null,null,null,null)
-B.GU=new A.is(null,null,null,"Amount",null,null,null,null,null,null,null,null,null,null,null,null,!0,!0,!1,null,null,null,null,null,null,null,null,null,B.GI,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,!0,null,null,null,null)
-B.GV=new A.is(null,null,null,"Password",null,null,null,null,null,null,null,null,null,null,null,null,!0,!0,!1,null,null,null,null,null,null,null,null,null,B.oi,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,!0,null,null,null,null)
+B.GU=new A.is(null,null,null,"Password",null,null,null,null,null,null,null,null,null,null,null,null,!0,!0,!1,null,null,null,null,null,null,null,null,null,B.oi,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,!0,null,null,null,null)
 B.Gu=new A.cE(58519,"MaterialIcons",!1)
 B.GN=new A.eP(B.Gu,null,null,null,null)
 B.ok=new A.is(null,null,null,"Username",null,null,null,null,null,null,null,null,null,null,null,null,!0,!0,!1,null,null,null,null,null,null,null,null,null,B.GN,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,!0,null,null,null,null)
+B.Gm=new A.cE(57522,"MaterialIcons",!1)
+B.GI=new A.eP(B.Gm,null,null,null,null)
+B.GV=new A.is(null,null,null,"Amount (KES)",null,null,null,null,null,null,null,null,null,null,null,null,!0,!0,!1,null,null,null,null,null,null,null,null,null,B.GI,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,!0,null,null,null,null)
 B.GX=new A.cG(0.25,0.5,B.M)
 B.EC=new A.dl(0.1,0,0.45,1)
 B.GY=new A.cG(0.7038888888888889,1,B.EC)
