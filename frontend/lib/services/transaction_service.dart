@@ -97,4 +97,39 @@ class TransactionService {
       throw Exception('Failed to load categories');
     }
   }
+
+  Future<List<Map<String, dynamic>>> fetchBudgets() async {
+    final token = await _authService.getToken();
+    final response = await http.get(
+      Uri.parse('$baseUrl/budgets/'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      return List<Map<String, dynamic>>.from(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to load budgets');
+    }
+  }
+
+  Future<void> createBudget(int categoryId, double amount, String month) async {
+    final token = await _authService.getToken();
+    final response = await http.post(
+      Uri.parse('$baseUrl/budgets/'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'category_id': categoryId,
+        'amount': amount,
+        'month': month,
+      }),
+    );
+    if (response.statusCode != 201) {
+      throw Exception('Failed to create budget');
+    }
+  }
 }

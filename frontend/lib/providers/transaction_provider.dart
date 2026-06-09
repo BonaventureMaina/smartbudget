@@ -7,11 +7,13 @@ class TransactionProvider with ChangeNotifier {
   final TransactionService _service = TransactionService();
   List<Transaction> _transactions = [];
   List<Category> _categories = [];
+  List<Map<String, dynamic>> _budgets = [];
   double? _forecast;
   bool _loading = false;
 
   List<Transaction> get transactions => _transactions;
   List<Category> get categories => _categories;
+  List<Map<String, dynamic>> get budgets => _budgets;
   double? get forecast => _forecast;
   bool get loading => _loading;
 
@@ -54,5 +56,17 @@ class TransactionProvider with ChangeNotifier {
       _categories = await _service.fetchCategories();
       notifyListeners();
     } catch (_) {}
+  }
+
+  Future<void> fetchBudgets() async {
+    try {
+      _budgets = await _service.fetchBudgets();
+      notifyListeners();
+    } catch (_) {}
+  }
+
+  Future<void> createBudget(int categoryId, double amount, String month) async {
+    await _service.createBudget(categoryId, amount, month);
+    await fetchBudgets();
   }
 }

@@ -7,6 +7,7 @@ import 'screens/register_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/add_transaction_screen.dart';
 import 'screens/budget_screen.dart';
+import 'screens/set_budget_screen.dart';
 
 void main() {
   runApp(const SmartBudgetApp());
@@ -15,9 +16,9 @@ void main() {
 class SmartBudgetApp extends StatelessWidget {
   const SmartBudgetApp({super.key});
 
-  static const Color _primary = Color(0xFF6C63FF);       // electric violet
-  static const Color _surface = Color(0xFF1E1E2C);       // dark surface
-  static const Color _background = Color(0xFF121220);    // deep background
+  static const Color _primary = Color(0xFF6C63FF);
+  static const Color _surface = Color(0xFF1E1E2C);
+  static const Color _background = Color(0xFF121220);
   static const Color _onPrimary = Colors.white;
   static const Color _onSurface = Color(0xFFE0E0E0);
 
@@ -97,6 +98,7 @@ class SmartBudgetApp extends StatelessWidget {
           '/home': (_) => const HomeScreen(),
           '/add-transaction': (_) => const AddTransactionScreen(),
           '/budgets': (_) => const BudgetScreen(),
+          '/set-budget': (_) => const SetBudgetScreen(),
         },
         home: const AuthGate(),
       ),

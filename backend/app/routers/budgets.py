@@ -1,11 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-
 from .. import models, schemas, auth
 from ..database import get_db
 
 router = APIRouter(prefix="/budgets", tags=["budgets"])
-
 
 @router.post("/", response_model=schemas.BudgetOut, status_code=201)
 def create_budget(
@@ -22,8 +20,15 @@ def create_budget(
     db.add(new_budget)
     db.commit()
     db.refresh(new_budget)
-    return new_budget
-
+    cat = db.query(models.Category).get(b.category_id)
+    return {
+        "id": new_budget.id,
+        "user_id": new_budget.user_id,
+        "category_id": new_budget.category_id,
+        "category_name": cat.name if cat else "Unknown",
+        "amount": new_budget.amount,
+        "month": new_budget.month,
+    }
 
 @router.get("/", response_model=list[schemas.BudgetOut])
 def list_budgets(
@@ -34,4 +39,16 @@ def list_budgets(
     q = db.query(models.Budget).filter(models.Budget.user_id == current_user.id)
     if month:
         q = q.filter(models.Budget.month == month)
-    return q.all()
+    budgets = q.all()
+    result = []
+    for b in budgets:
+        cat = db.query(models.Category).get(b.category_id)
+        result.append({
+            "id": b.id,
+            "user_id": b.user_id,
+            "category_id": b.category_id,
+            "category_name": cat.name if cat else "Unknown",
+            "amount": b.amount,
+            "month": b.month,
+        })
+    return result
