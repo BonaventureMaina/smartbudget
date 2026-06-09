@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import '../models/transaction.dart';
+import '../models/category.dart';
 import '../services/transaction_service.dart';
 
 class TransactionProvider with ChangeNotifier {
   final TransactionService _service = TransactionService();
   List<Transaction> _transactions = [];
+  List<Category> _categories = [];
   double? _forecast;
   bool _loading = false;
 
   List<Transaction> get transactions => _transactions;
+  List<Category> get categories => _categories;
   double? get forecast => _forecast;
   bool get loading => _loading;
 
@@ -35,13 +38,20 @@ class TransactionProvider with ChangeNotifier {
       description: description,
       categoryId: categoryId,
     );
-    await fetchTransactions();  // refresh list
+    await fetchTransactions();
   }
 
   Future<void> fetchForecast() async {
     try {
       final data = await _service.fetchForecast();
       _forecast = data['next_month_spending_forecast']?.toDouble();
+      notifyListeners();
+    } catch (_) {}
+  }
+
+  Future<void> fetchCategories() async {
+    try {
+      _categories = await _service.fetchCategories();
       notifyListeners();
     } catch (_) {}
   }

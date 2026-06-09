@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/transaction_provider.dart';
+import '../models/category.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   const AddTransactionScreen({super.key});
@@ -14,6 +15,14 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final _amountCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
   String _type = 'expense';
+  Category? _selectedCategory;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final txProvider = context.read<TransactionProvider>();
+    if (txProvider.categories.isEmpty) txProvider.fetchCategories();
+  }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -22,6 +31,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             amount: double.parse(_amountCtrl.text),
             type: _type,
             description: _descCtrl.text.isNotEmpty ? _descCtrl.text : null,
+            categoryId: _selectedCategory?.id,
           );
       if (mounted) Navigator.of(context).pop(true);
     } catch (e) {
@@ -37,7 +47,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final txProvider = context.watch<TransactionProvider>();
     final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Add Transaction')),
       body: SafeArea(
@@ -70,7 +82,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                         prefixIcon: Icon(Icons.attach_money),
                       ),
                       validator: (v) =>
-                          v == null || double.tryParse(v) == null ? 'Enter a number' : null,
+                          v == null || double.tryParse(v) == null ? 'Enter an amount' : null,
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
@@ -78,6 +90,18 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       decoration: const InputDecoration(
                         labelText: 'Description',
                         prefixIcon: Icon(Icons.description_outlined),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    DropdownButtonFormField<Category>(
+                      value: _selectedCategory,
+                      items: txProvider.categories.map((cat) {
+                        return DropdownMenuItem(value: cat, child: Text(cat.name));
+                      }).toList(),
+                      onChanged: (v) => setState(() => _selectedCategory = v),
+                      decoration: const InputDecoration(
+                        labelText: 'Category (optional)',
+                        prefixIcon: Icon(Icons.category_outlined),
                       ),
                     ),
                     const SizedBox(height: 24),

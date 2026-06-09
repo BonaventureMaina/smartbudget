@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../config.dart';
 import '../models/transaction.dart';
+import '../models/category.dart';
 import 'auth_service.dart';
 
 class TransactionService {
@@ -77,6 +78,23 @@ class TransactionService {
     );
     if (response.statusCode != 200) {
       throw Exception('Failed to delete transaction');
+    }
+  }
+
+  Future<List<Category>> fetchCategories() async {
+    final token = await _authService.getToken();
+    final response = await http.get(
+      Uri.parse('$baseUrl/categories/'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => Category.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load categories');
     }
   }
 }
